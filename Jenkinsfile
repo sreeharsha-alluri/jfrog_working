@@ -25,7 +25,13 @@ pipeline {
         // Use a Docker agent for running the JFrog CLI
         container('releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0') {
           // Run JFrog CLI command inside Docker container
-          sh "jfrog rt upload --url http://44.212.5.222:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} target/demo-0.0.1-SNAPSHOT.jar test/"
+          sh """
+            echo "Printing current directory:"
+            pwd
+            ls -al
+            echo "Uploading artifact to JFrog..."
+            jfrog rt upload --url http://44.212.5.222:8082/artifactory/ --access-token \${ARTIFACTORY_ACCESS_TOKEN} target/demo-0.0.1-SNAPSHOT.jar test/
+          """
         }
       }
     }
