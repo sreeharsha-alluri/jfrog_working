@@ -37,7 +37,7 @@ pipeline {
                     // Execute commands inside the Docker container
                     sh """
                         ${dockerCommand} pull ${dockerImage}
-                        ${dockerCommand} run --rm -v \$PWD:/workspace ${dockerImage} /bin/sh -c "cd /workspace && echo Printing current directory: && ls -al && echo Uploading artifact to JFrog... && jfrog rt upload --url http://44.212.5.222:8082/artifactory/ --access-token ${accessToken} target/demo-0.0.1-SNAPSHOT.jar test/"
+                        ${dockerCommand} run --rm -v \$PWD:/workspace ${dockerImage} /bin/sh -c "cd /workspace && echo Printing current directory: && ls -al && echo Uploading artifact to JFrog... && jfrog rt upload --url http://54.88.249.2:8082/artifactory/ --access-token ${accessToken} target/demo-0.0.1-SNAPSHOT.jar test/"
                     """
                 }
             }
