@@ -26,7 +26,7 @@ pipeline {
                     // Use a temporary variable for ARTIFACTORY_ACCESS_TOKEN
                     def accessToken = ARTIFACTORY_ACCESS_TOKEN
                     // Use Docker image directly with sudo
-                    sh 'sudo docker inspect -f . releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0'
+                    sh 'sudo docker inspect -f . releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0 || true'
                     sh 'sudo docker pull releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0'
                     // Run Docker commands with sudo
                     sh '''
