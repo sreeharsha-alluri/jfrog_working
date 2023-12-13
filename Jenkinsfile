@@ -13,6 +13,8 @@ pipeline {
         script {
           // Ensure mvnw script has executable permissions
           sh 'sudo chmod +x mvnw'
+          // Regenerate Maven Wrapper files
+          sh 'mvn -N io.takari:maven:wrapper'
           // Run the Maven build
           sh './mvnw clean install'
         }
