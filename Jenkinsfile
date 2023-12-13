@@ -22,19 +22,16 @@ pipeline {
         }
         stage('Upload to Artifactory') {
             steps {
-                // Use a Docker agent for running the JFrog CLI
                 script {
                     // Use a temporary variable for ARTIFACTORY_ACCESS_TOKEN
                     def accessToken = ARTIFACTORY_ACCESS_TOKEN
-                    container('releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0') {
-                        // Run JFrog CLI command inside Docker container
-                        sh """
-                            echo "Printing current directory:"
-                            pwd
-                            ls -al
-                            echo "Uploading artifact to JFrog..."
-                            jfrog rt upload --url http://44.212.5.222:8082/artifactory/ --access-token \${accessToken} target/demo-0.0.1-SNAPSHOT.jar test/
-                        """
+                    // Use Docker image directly
+                    docker.image('releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0').inside {
+                        echo "Printing current directory:"
+                        sh 'pwd'
+                        sh 'ls -al'
+                        echo "Uploading artifact to JFrog..."
+                        sh "jfrog rt upload --url http://44.212.5.222:8082/artifactory/ --access-token ${accessToken} target/demo-0.0.1-SNAPSHOT.jar test/"
                     }
                 }
             }
