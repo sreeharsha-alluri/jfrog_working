@@ -25,14 +25,20 @@ pipeline {
                 script {
                     // Use a temporary variable for ARTIFACTORY_ACCESS_TOKEN
                     def accessToken = ARTIFACTORY_ACCESS_TOKEN
-                    // Use Docker image directly with sudo
-                    sh '''
-                        sudo docker inspect -f . releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0 || true
-                        sudo docker pull releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0
-                        sudo docker run --rm -v $PWD:/workspace \
-                            releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0 \
-                            /bin/sh -c "cd /workspace && echo Printing current directory: && ls -al && echo Uploading artifact to JFrog... && jfrog rt upload --url http://44.212.5.222:8082/artifactory/ --access-token ${accessToken} target/demo-0.0.1-SNAPSHOT.jar test/"
-                    '''
+                    // Use Docker image directly
+                    def dockerImage = 'releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0'
+                    
+                    // Check if sudo is required
+                    def useSudo = sh(script: "docker run --rm -v /var/lib/jenkins/workspace/new:/workspace ${dockerImage} /bin/sh -c 'test -w /workspace'", returnStatus: true) != 0
+
+                    // Run the Docker command with or without sudo
+                    def dockerCommand = useSudo ? 'sudo docker' : 'docker'
+                    
+                    // Execute commands inside the Docker container
+                    sh """
+                        ${dockerCommand} pull ${dockerImage}
+                        ${dockerCommand} run --rm -v \$PWD:/workspace ${dockerImage} /bin/sh -c "cd /workspace && echo Printing current directory: && ls -al && echo Uploading artifact to JFrog... && jfrog rt upload --url http://44.212.5.222:8082/artifactory/ --access-token ${accessToken} target/demo-0.0.1-SNAPSHOT.jar test/"
+                    """
                 }
             }
         }
